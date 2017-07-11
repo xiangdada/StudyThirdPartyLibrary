@@ -13,6 +13,7 @@ import com.example.admin.studythirdpartylibrary.adapter.TeachingVideoAdapter;
 import com.example.admin.studythirdpartylibrary.entity.Array;
 import com.example.admin.studythirdpartylibrary.entity.PictruesData;
 import com.example.admin.studythirdpartylibrary.entity.TeachingVideoData;
+import com.example.admin.studythirdpartylibrary.uitl.LogUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -21,6 +22,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +32,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.CallAdapter;
 import retrofit2.Callback;
+import retrofit2.Converter;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -37,13 +43,16 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
  * Created by xpf on 2017/7/7.
- *
+ * <p>
  * 涉及到两个Result类，一个是retrofit自带的，一个是在此包下自定义的类；
+ * <p>
+ * 本篇内容大部分学习自文章@link{http://www.jianshu.com/p/308f3c54abdd}
  */
 public class RetrofitActivity extends AppCompatActivity {
     public static final String TAG = "RetrofitActivity";
@@ -65,7 +74,9 @@ public class RetrofitActivity extends AppCompatActivity {
         //        UseResponseBody.run(this, mListView);
         //        UseCustomEntity.run(this, mListView);
         //        UseListTeachingVideoData.run(this, mListView);
-        UseListTeachingVideoDataPerfectReceipt.run(this, mListView);
+        //        UseListTeachingVideoDataPerfectReceipt.run(this, mListView);
+        //                UseCustomConverter.run(this, mListView);
+        UseCustomCallAdapter.run(this, mListView);
     }
 
 
@@ -82,6 +93,11 @@ public class RetrofitActivity extends AppCompatActivity {
          * @Query 请求参数
          */
         public interface TeachingVideoService {
+            /**
+             * Retrofit接口返回的值分为两部分，分别为Call部分和ResponseBody部分
+             * addConverterFactory可以改变call部分的值
+             * addCallAdapterFactory可以改变ResponseBody部分的值
+             */
             @GET("api/teacher")
             Call<ResponseBody> getCourse(@Query("type") int type, @Query("num") int num);
         }
@@ -99,7 +115,7 @@ public class RetrofitActivity extends AppCompatActivity {
             // 步骤3：通过Retrofit的实例得到一个业务请求接口对象
             TeachingVideoService service = retrofit.create(TeachingVideoService.class);
             // 步骤4：调用请求方法并且得到Call实例
-            Call<ResponseBody> call = service.getCourse(4, 3);
+            Call<ResponseBody> call = service.getCourse(4, 30);
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -147,6 +163,7 @@ public class RetrofitActivity extends AppCompatActivity {
         }
 
     }
+
 
     /**
      * 既然定义了泛型那么也可以使用其他类型来接受返回数据
@@ -244,7 +261,7 @@ public class RetrofitActivity extends AppCompatActivity {
             TeachingVideoService service = retrofit.create(TeachingVideoService.class);
 
             // 步骤4：调用请求方法并且得到Call实例
-            Observable<Result<List<TeachingVideoData>>> observable = service.getTeachingVideo(4, 3);
+            Observable<Result<List<TeachingVideoData>>> observable = service.getTeachingVideo(4, 30);
             observable.subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<Result<List<TeachingVideoData>>>() {
@@ -268,6 +285,7 @@ public class RetrofitActivity extends AppCompatActivity {
         }
     }
 
+
     /**
      * 使用retrofit自带的Result<T>类来接受返回的数据并将自定义的Array对象作为泛型参数传入
      * 优化UseListTeachingVideoData类中的方法所不能获取的一些网络请求回执数据具体可见方法类的打印部分
@@ -287,6 +305,8 @@ public class RetrofitActivity extends AppCompatActivity {
         }
 
         public static void run(Context context, ListView listView) {
+
+
             final TeachingVideoAdapter adapter = new TeachingVideoAdapter(context, null);
             listView.setAdapter(adapter);
 
@@ -303,7 +323,7 @@ public class RetrofitActivity extends AppCompatActivity {
             TeachingVideoService service = retrofit.create(TeachingVideoService.class);
 
             // 步骤4：调用请求方法并且得到Call实例
-            Observable<retrofit2.adapter.rxjava.Result<Array<TeachingVideoData>>> observable = service.getTeachingVideo(4, 3);
+            Observable<retrofit2.adapter.rxjava.Result<Array<TeachingVideoData>>> observable = service.getTeachingVideo(4, 30);
             observable.subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<retrofit2.adapter.rxjava.Result<Array<TeachingVideoData>>>() {
@@ -333,6 +353,329 @@ public class RetrofitActivity extends AppCompatActivity {
                     });
 
         }
+    }
+
+
+    /**
+     * 使用自定义的Converter将返回的数据ResponseBody转换成指定的类型如String
+     * 这样就无论返回的是JSONObjetc还是JSONArray都可以转变成String再对数据进行解析
+     */
+    static class UseCustomConverter {
+
+        /**
+         * 自定义Converter实现ResponseBody到String的转换
+         */
+        public static class StringConverter implements Converter<ResponseBody, String> {
+            public static final StringConverter instance = new StringConverter();
+
+            @Override
+            public String convert(ResponseBody value) throws IOException {
+                return value.string();
+            }
+        }
+
+        /**
+         * 用于向Retrofit提供StringConverter
+         */
+        public static class StringConverterFactory extends Converter.Factory {
+            public static final StringConverterFactory instance = new StringConverterFactory();
+
+            public static StringConverterFactory create() {
+                return instance;
+            }
+
+            // 只关注ResponseBody到String的转换，其他的方法可以不覆盖
+            @Nullable
+            @Override
+            public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations, Retrofit retrofit) {
+                if (type == String.class) {
+                    return StringConverter.instance;
+                }
+                // 其他类型我们不处理，返回null就行
+                return null;
+            }
+        }
+
+        /**
+         * 步骤1：创建的业务请求接口
+         * 拼接之后得到的完整的请求地址是：BASEURL + "api/teacher" + "?" + "type=type" + "&" + "num=num"
+         *
+         * @GET 请求
+         * @Query 请求参数
+         */
+        public interface TeachingVideoService {
+            @GET("api/teacher")
+            Call<String> getTeachingVideo(@Query("type") int type, @Query("num") int num);
+        }
+
+        public static void run(Context context, ListView listView) {
+            final TeachingVideoAdapter adapter = new TeachingVideoAdapter(context, null);
+            listView.setAdapter(adapter);
+
+            // 步骤2：需要创建一个Retrofit的实例
+            /**
+             * 注：addConverterFactory是有先后顺序的，
+             * 如果有多个ConverterFactory支持同一种类型，
+             * 那么就只有第一个才会被调用，其他的则不会继续调用，
+             * 但是GsonConverterFactory是不判断是否支持的，
+             * 所以此处如果将两个addConverterFactory交换一下顺序的话，
+             * 会有一个异常抛出，原因是类型不匹配；
+             */
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(BASEURL)
+                    .addConverterFactory(StringConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            // 步骤3：通过Retrofit的实例得到一个业务请求接口对象
+            TeachingVideoService service = retrofit.create(TeachingVideoService.class);
+
+            // 步骤4：调用请求方法并且得到Call实例
+            Call<String> call = service.getTeachingVideo(4, 30);
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    String string = response.body();
+                    LogUtil.i(TAG, "onResponse： " + string);
+                    try {
+                        JSONObject responseObject = new JSONObject(string);
+                        if (responseObject != null) {
+                            JSONArray responseArray = responseObject.optJSONArray("data");
+                            if (responseArray != null) {
+                                if (responseArray.length() > 0) {
+                                    List<TeachingVideoData> datas = new ArrayList<TeachingVideoData>();
+                                    for (int i = 0; i < responseArray.length(); i++) {
+                                        JSONObject jsonObject = responseArray.optJSONObject(i);
+                                        datas.add(new TeachingVideoData(
+                                                jsonObject.optString("name"),
+                                                jsonObject.optString("name"),
+                                                jsonObject.optString("picSmall"),
+                                                jsonObject.optString("picBig"),
+                                                jsonObject.optString("description"),
+                                                jsonObject.optString("learner")));
+                                    }
+                                    adapter.notifyDataSetChanged(datas);
+                                }
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    LogUtil.i(TAG, "onFailure: " + t.toString());
+                }
+            });
+        }
+
+    }
+
+
+    /**
+     * 使用自定义的CallAdapter将返回数据的原始类型Call转换成指定的类型
+     * 这样就可以在指定的类型里面写一些自定义的的方法和一些自定义的属性
+     */
+    static class UseCustomCallAdapter {
+
+        public static class CustomCall<R> {
+            public final Call<R> call;
+
+            public CustomCall(Call<R> call) {
+                this.call = call;
+            }
+
+            // 提供一个同步获取数据的方法
+            public R get() throws IOException {
+                // 网络请求并且拿到数据
+                return call.execute().body();
+            }
+
+        }
+
+        public static class CustomCallAdapter implements CallAdapter<R, CustomCall<R>> {
+            private final Type responseType;
+
+            public CustomCallAdapter(Type responseType) {
+                this.responseType = responseType;
+            }
+
+            @Override
+            public Type responseType() {
+                return responseType;
+            }
+
+            @Override
+            public CustomCall<R> adapt(Call<R> call) {
+                // 由Custom决定如何使用
+                return new CustomCall<>(call);
+            }
+        }
+
+        public static class CustomCallAdapterFactory extends CallAdapter.Factory {
+            public static final CustomCallAdapterFactory instance = new CustomCallAdapterFactory();
+
+            public static CustomCallAdapterFactory create() {
+                return instance;
+            }
+
+
+            @Nullable
+            @Override
+            public CallAdapter<?, ?> get(Type returnType, Annotation[] annotations, Retrofit retrofit) {
+                // 获取原始类型
+                Class<?> rawType = getRawType(returnType);
+                // 返回值必须是CustomCall并且带有泛型
+                if (rawType == CustomCall.class && returnType instanceof ParameterizedType) {
+                    Type callReturnType = getParameterUpperBound(0, (ParameterizedType) returnType);
+                    return new CustomCallAdapter(callReturnType);
+                }
+                return null;
+            }
+        }
+
+        /**
+         * 步骤1：创建的业务请求接口
+         * 拼接之后得到的完整的请求地址是：BASEURL + "api/teacher" + "?" + "type=type" + "&" + "num=num"
+         *
+         * @GET 请求
+         * @Query 请求参数
+         */
+        public interface TeachingVideoService {
+            @GET("api/teacher")
+            CustomCall<String> getTeachingVideo(@Query("type") int type, @Query("num") int num);
+        }
+
+        public static void run(Context context, ListView listView) {
+            final TeachingVideoAdapter adapter = new TeachingVideoAdapter(context, null);
+            listView.setAdapter(adapter);
+
+            // 步骤2：需要创建一个Retrofit的实例
+            /**
+             * 注：addCallAdapterFactor与addConverterFactory一样也是有先后顺序的
+             */
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(BASEURL)
+                    .addConverterFactory(UseCustomConverter.StringConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(CustomCallAdapterFactory.create())
+                    .build();
+
+            // 步骤3：通过Retrofit的实例得到一个业务请求接口对象
+            final TeachingVideoService service = retrofit.create(TeachingVideoService.class);
+
+            // 步骤4：调用请求方法并且得到Call实例
+            CustomCall<String> call = service.getTeachingVideo(4, 30);
+
+            // 同步
+            //            synchro(call);
+
+            // 异步
+            call.call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if (response.isSuccessful()) {
+                        final String string = response.body();
+                        LogUtil.i(TAG, "onResponse: " + string);
+                        // 按照api文档说明的onResponse是在主线程调用的，可是此处直接在此进行adapter动态刷新会抛出异常
+                        notifyDataSetChanged(string, adapter);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    LogUtil.i(TAG, t.toString());
+                }
+            });
+
+        }
+
+        private static void synchro(final CustomCall<String> call) {
+            Observable.create(new Observable.OnSubscribe<String>() {
+                @Override
+                public void call(final Subscriber<? super String> subscriber) {
+                    try {
+                        // 调用CustomCall类中的get()方法进行同步的网络请求并且拿到返回数据
+                        String result = call.get();
+                        subscriber.onNext(result);
+                        subscriber.onCompleted();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<String>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            LogUtil.i(TAG, e.toString());
+                        }
+
+                        @Override
+                        public void onNext(String s) {
+                            LogUtil.i(TAG, s);
+                        }
+                    });
+        }
+
+        private static void notifyDataSetChanged(final String string, final TeachingVideoAdapter adapter) {
+            Observable.create(new Observable.OnSubscribe<String>() {
+                @Override
+                public void call(Subscriber<? super String> subscriber) {
+                    subscriber.onNext(string);
+                    subscriber.onCompleted();
+                }
+            })
+                    .subscribeOn(AndroidSchedulers.mainThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<String>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+
+                        @Override
+                        public void onNext(String s) {
+                            try {
+                                JSONObject responseObject = new JSONObject(s);
+                                if (responseObject != null) {
+                                    JSONArray responseArray = responseObject.optJSONArray("data");
+                                    if (responseArray != null) {
+                                        if (responseArray.length() > 0) {
+                                            List<TeachingVideoData> datas = new ArrayList<TeachingVideoData>();
+                                            for (int i = 0; i < responseArray.length(); i++) {
+                                                JSONObject jsonObject = responseArray.optJSONObject(i);
+                                                datas.add(new TeachingVideoData(
+                                                        jsonObject.optString("name"),
+                                                        jsonObject.optString("name"),
+                                                        jsonObject.optString("picSmall"),
+                                                        jsonObject.optString("picBig"),
+                                                        jsonObject.optString("description"),
+                                                        jsonObject.optString("learner")));
+                                            }
+                                            adapter.notifyDataSetChanged(datas);
+                                        }
+                                    }
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+        }
+
     }
 
 }
