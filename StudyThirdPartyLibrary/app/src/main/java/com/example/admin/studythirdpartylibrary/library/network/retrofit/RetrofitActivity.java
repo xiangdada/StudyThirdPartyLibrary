@@ -13,6 +13,9 @@ import com.example.admin.studythirdpartylibrary.adapter.TeachingVideoAdapter;
 import com.example.admin.studythirdpartylibrary.entity.Array;
 import com.example.admin.studythirdpartylibrary.entity.PictruesData;
 import com.example.admin.studythirdpartylibrary.entity.TeachingVideoData;
+import com.example.admin.studythirdpartylibrary.entity.ThanksWallData;
+import com.example.admin.studythirdpartylibrary.library.network.retrofit.encapsulation.ApiService;
+import com.example.admin.studythirdpartylibrary.library.network.retrofit.encapsulation.OnResponseCallBack;
 import com.example.admin.studythirdpartylibrary.uitl.LogUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -26,7 +29,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,6 +46,7 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
+import retrofit2.http.Url;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
@@ -57,9 +63,13 @@ import rx.schedulers.Schedulers;
 public class RetrofitActivity extends AppCompatActivity {
     public static final String TAG = "RetrofitActivity";
 
-    public static String URL = "http://www.imooc.com/api/teacher?type=4&num=30";
+    //    public static String url = "http://www.imooc.com/api/teacher?type=4&num=30";
 
     public static final String BASEURL = "http://www.imooc.com/";
+    public static final String URL = "api/teache1";
+
+    //    public static final String BASEURL = "http://120.27.37.132:9002/TrigMCISP-cdjsxy/";
+    //    public static final String URL = "appService/appPerson_appService.t";
 
     @BindView(R.id.listView)
     ListView mListView;
@@ -75,8 +85,9 @@ public class RetrofitActivity extends AppCompatActivity {
         //        UseCustomEntity.run(this, mListView);
         //        UseListTeachingVideoData.run(this, mListView);
         //        UseListTeachingVideoDataPerfectReceipt.run(this, mListView);
-        //                UseCustomConverter.run(this, mListView);
-        UseCustomCallAdapter.run(this, mListView);
+        //        UseCustomConverter.run(this, mListView);
+        test();
+        //        UseCustomCallAdapter.run(this, mListView);
     }
 
 
@@ -300,12 +311,11 @@ public class RetrofitActivity extends AppCompatActivity {
          * @Query 请求参数
          */
         public interface TeachingVideoService {
-            @GET("api/teacher")
-            Observable<retrofit2.adapter.rxjava.Result<Array<TeachingVideoData>>> getTeachingVideo(@Query("type") int type, @Query("num") int num);
+            @GET
+            Observable<retrofit2.adapter.rxjava.Result<Array<TeachingVideoData>>> getTeachingVideo(@Url String url, @Query("type") int type, @Query("num") int num);
         }
 
         public static void run(Context context, ListView listView) {
-
 
             final TeachingVideoAdapter adapter = new TeachingVideoAdapter(context, null);
             listView.setAdapter(adapter);
@@ -323,7 +333,7 @@ public class RetrofitActivity extends AppCompatActivity {
             TeachingVideoService service = retrofit.create(TeachingVideoService.class);
 
             // 步骤4：调用请求方法并且得到Call实例
-            Observable<retrofit2.adapter.rxjava.Result<Array<TeachingVideoData>>> observable = service.getTeachingVideo(4, 30);
+            Observable<retrofit2.adapter.rxjava.Result<Array<TeachingVideoData>>> observable = service.getTeachingVideo("api/teacherl", 4, 30);
             observable.subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<retrofit2.adapter.rxjava.Result<Array<TeachingVideoData>>>() {
@@ -334,11 +344,12 @@ public class RetrofitActivity extends AppCompatActivity {
 
                         @Override
                         public void onError(Throwable e) {
-                            Log.i(TAG, e.toString());
+                            Log.i(TAG, "onError: " + e.toString());
                         }
 
                         @Override
                         public void onNext(retrofit2.adapter.rxjava.Result<Array<TeachingVideoData>> arrayResult) {
+
                             Log.i(TAG, "headers: " + arrayResult.response().headers() + "\n"
                                     + "code: " + arrayResult.response().code() + "\n"
                                     + "raw: " + arrayResult.response().raw() + "\n"
@@ -404,7 +415,7 @@ public class RetrofitActivity extends AppCompatActivity {
          * @Query 请求参数
          */
         public interface TeachingVideoService {
-            @GET("api/teacher")
+            @GET(URL)
             Call<String> getTeachingVideo(@Query("type") int type, @Query("num") int num);
         }
 
@@ -435,32 +446,39 @@ public class RetrofitActivity extends AppCompatActivity {
             call.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
-                    String string = response.body();
-                    LogUtil.i(TAG, "onResponse： " + string);
-                    try {
-                        JSONObject responseObject = new JSONObject(string);
-                        if (responseObject != null) {
-                            JSONArray responseArray = responseObject.optJSONArray("data");
-                            if (responseArray != null) {
-                                if (responseArray.length() > 0) {
-                                    List<TeachingVideoData> datas = new ArrayList<TeachingVideoData>();
-                                    for (int i = 0; i < responseArray.length(); i++) {
-                                        JSONObject jsonObject = responseArray.optJSONObject(i);
-                                        datas.add(new TeachingVideoData(
-                                                jsonObject.optString("name"),
-                                                jsonObject.optString("name"),
-                                                jsonObject.optString("picSmall"),
-                                                jsonObject.optString("picBig"),
-                                                jsonObject.optString("description"),
-                                                jsonObject.optString("learner")));
+                    if (!response.isSuccessful()) {
+                        LogUtil.i(TAG, "message： " + response.message());
+                    } else {
+                        String string = response.body();
+                        LogUtil.i(TAG, "onResponse： " + string);
+                        if (string != null) {
+                            try {
+                                JSONObject responseObject = new JSONObject(string);
+                                if (responseObject != null) {
+                                    JSONArray responseArray = responseObject.optJSONArray("data");
+                                    if (responseArray != null) {
+                                        if (responseArray.length() > 0) {
+                                            List<TeachingVideoData> datas = new ArrayList<TeachingVideoData>();
+                                            for (int i = 0; i < responseArray.length(); i++) {
+                                                JSONObject jsonObject = responseArray.optJSONObject(i);
+                                                datas.add(new TeachingVideoData(
+                                                        jsonObject.optString("name"),
+                                                        jsonObject.optString("name"),
+                                                        jsonObject.optString("picSmall"),
+                                                        jsonObject.optString("picBig"),
+                                                        jsonObject.optString("description"),
+                                                        jsonObject.optString("learner")));
+                                            }
+                                            adapter.notifyDataSetChanged(datas);
+                                        }
                                     }
-                                    adapter.notifyDataSetChanged(datas);
                                 }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
+
                 }
 
                 @Override
@@ -678,4 +696,50 @@ public class RetrofitActivity extends AppCompatActivity {
 
     }
 
+
+    /**
+     * 对retrofit进行简单封装之后的使用示例
+     * 目前只对返回的数据转换成String类型进行了简单的封装
+     */
+    public void test() {
+        Map<String, Object> body = new HashMap<>();
+        body.put("pageIndex", 1);
+        body.put("pageNumber", 15);
+        ApiService.test(this, body, new OnResponseCallBack<List<ThanksWallData>>(true) {
+            @Override
+            public void onSuccess(List<ThanksWallData> result) {
+                if (result != null) {
+                    for (ThanksWallData thanksWallData : result) {
+                        LogUtil.i("测试", thanksWallData.getGratitudeContent());
+                    }
+
+                }
+
+            }
+
+            @Override
+            public void onSuccess(String code, String message, JSONObject dataObject, JSONObject responseObject) {
+                LogUtil.i(TAG, "onSuccess2--code: " + code);
+                LogUtil.i(TAG, "onSuccess2--message: " + message);
+                LogUtil.i(TAG, "onSuccess2--dataObject: " + dataObject.toString());
+                LogUtil.i(TAG, "onSuccess2--responseObject: " + responseObject.toString());
+            }
+
+            @Override
+            public void onError(String code, String message) {
+                LogUtil.i(TAG, "onError--code: " + code);
+                LogUtil.i(TAG, "onError--message: " + message);
+            }
+
+            @Override
+            public void onFinish(boolean isSuccessful) {
+                super.onFinish(isSuccessful);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                LogUtil.i(TAG, "onFailure: " + t.toString());
+            }
+        });
+    }
 }
