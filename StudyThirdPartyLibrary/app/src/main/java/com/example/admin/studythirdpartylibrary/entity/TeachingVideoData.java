@@ -13,6 +13,7 @@ public class TeachingVideoData implements Serializable {
     private String picBig;
     private String description;
     private String learner;
+    private boolean isLike;
 
     public TeachingVideoData(String id, String name, String picSmall, String picBig, String description, String learner) {
         this.id = id;
@@ -71,6 +72,14 @@ public class TeachingVideoData implements Serializable {
         this.learner = learner;
     }
 
+    public boolean isLike() {
+        return isLike;
+    }
+
+    public void setLike(boolean like) {
+        isLike = like;
+    }
+
     @Override
     public String toString() {
         return "TeachingVideoData{" +
@@ -80,6 +89,8 @@ public class TeachingVideoData implements Serializable {
                 ", picBig='" + picBig + '\'' +
                 ", description='" + description + '\'' +
                 ", learner='" + learner + '\'' +
+                ", isLike=" + isLike +
                 '}';
     }
+
 }

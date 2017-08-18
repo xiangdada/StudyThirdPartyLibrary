@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="charts">
+        <item>LineChart折线图</item>
+        <item>BarChart条形图style0</item>
+        <item>BarChart条形图style1</item>
+        <item>ScatterChart分散图</item>
+        <item>CandleStickChart烛台图</item>
+        <item>PieChart饼形图</item>
+        <item>BubbleChart气泡图</item>
+        <item>RadarChart雷达图</item>
+        <item>CombinedChart组合图</item>
+        <item>HorizontalBarChart水平条形图</item>
+    </string-array>
+</resources>

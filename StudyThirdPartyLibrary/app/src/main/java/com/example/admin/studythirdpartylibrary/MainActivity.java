@@ -10,6 +10,8 @@ import android.widget.ListView;
 
 import com.example.admin.studythirdpartylibrary.adapter.CommonAdapter;
 import com.example.admin.studythirdpartylibrary.entity.CommonData;
+import com.example.admin.studythirdpartylibrary.library.eventbus.EventBusActivity;
+import com.example.admin.studythirdpartylibrary.library.mpandroidchart.MPAndroidChartActivity;
 import com.example.admin.studythirdpartylibrary.library.network.NetWorkActivity;
 import com.example.admin.studythirdpartylibrary.library.rejava.RxJavaActivity;
 
@@ -47,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
         datas = new ArrayList<CommonData>();
         datas.add(commonData("RxJava", RxJavaActivity.class));
         datas.add(commonData("网络编程", NetWorkActivity.class));
+        datas.add(commonData("EventBus",EventBusActivity.class));
+        datas.add(commonData("MPAndroidChart",MPAndroidChartActivity.class));
 
     }
 

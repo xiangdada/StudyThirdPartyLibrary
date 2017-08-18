@@ -41,14 +41,26 @@
                 android:text=""
                 android:textSize="13sp"/>
 
-            <TextView
-                android:id="@+id/learner"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="bottom|right"
-                android:padding="5dp"
-                android:text=""
-                android:textSize="11sp"/>
+                android:layout_height="match_parent">
+                <ImageView
+                    android:id="@+id/islikes"
+                    android:layout_width="40dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:src="@mipmap/islike_unpressed"/>
+                <TextView
+                    android:id="@+id/learner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:padding="5dp"
+                    android:text=""
+                    android:textSize="11sp"/>
+
+            </RelativeLayout>
+
         </LinearLayout>
     </LinearLayout>
 

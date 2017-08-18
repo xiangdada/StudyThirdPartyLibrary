@@ -54,6 +54,10 @@ public class TeachingVideoAdapter extends BaseAdapter {
         }
     }
 
+    public List<TeachingVideoData> getDatas() {
+        return mDatas;
+    }
+
     @Override
     public int getCount() {
         return mDatas.size();
@@ -80,6 +84,7 @@ public class TeachingVideoAdapter extends BaseAdapter {
             holder.mIvPicSmall = (ImageView) convertView.findViewById(R.id.picSmall);
             holder.mTvName = (TextView) convertView.findViewById(R.id.name);
             holder.mTvDecription = (TextView) convertView.findViewById(R.id.description);
+            holder.mIvIslikes = (ImageView) convertView.findViewById(R.id.islikes);
             holder.mTvLeaener = (TextView) convertView.findViewById(R.id.learner);
             convertView.setTag(holder);
         }
@@ -87,6 +92,11 @@ public class TeachingVideoAdapter extends BaseAdapter {
         imageLoading(data.getPicSmall(),holder.mIvPicSmall);
         holder.mTvName.setText(data.getName());
         holder.mTvDecription.setText(data.getDescription());
+        if(data.isLike()) {
+            holder.mIvIslikes.setImageDrawable(mContext.getResources().getDrawable(R.mipmap.islike_pressed));
+        } else {
+            holder.mIvIslikes.setImageDrawable(mContext.getResources().getDrawable(R.mipmap.islike_unpressed));
+        }
         holder.mTvLeaener.setText(data.getLearner());
         return convertView;
     }
@@ -95,6 +105,7 @@ public class TeachingVideoAdapter extends BaseAdapter {
         private ImageView mIvPicSmall;
         private TextView mTvName;
         private TextView mTvDecription;
+        private ImageView mIvIslikes;
         private TextView mTvLeaener;
     }
 

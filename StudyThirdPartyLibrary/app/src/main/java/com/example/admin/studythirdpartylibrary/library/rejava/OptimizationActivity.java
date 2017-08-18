@@ -198,6 +198,7 @@ public class OptimizationActivity extends AppCompatActivity {
              */
             @Override
             public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+                //但是当网页中的某个图片找不到也会执行这一个方法且也会返回一个错误码为errorResponse.getStatusCode()==404
                 mRelativeLayout.setVisibility(View.VISIBLE);
             }
         });
@@ -214,6 +215,7 @@ public class OptimizationActivity extends AppCompatActivity {
 
     /**
      * 获取到WebView请求网址返回的状态码
+     * 但是当网页中的某个图片找不到也会返回一个404错误
      *
      * @param string 请求的链接
      * @return 请求返回的状态码
@@ -237,7 +239,6 @@ public class OptimizationActivity extends AppCompatActivity {
         }
         return state;
     }
-
 
     /**
      * 判断网络是否连接

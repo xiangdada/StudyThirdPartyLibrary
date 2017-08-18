@@ -29,6 +29,10 @@
         <activity android:name=".library.network.NetWorkActivity"/>
         <activity android:name=".library.network.retrofit.RetrofitActivity"/>
         <activity android:name=".library.network.okhttp.OkhttpActivity"/>
+        <activity android:name=".library.eventbus.EventBusActivity"/>
+        <activity android:name=".library.eventbus.SimpleExampleActivity"/>
+        <activity android:name=".library.eventbus.SpecificExampleActivity"/>
+        <activity android:name=".library.mpandroidchart.MPAndroidChartActivity"/>
     </application>
 
 </manifest>
