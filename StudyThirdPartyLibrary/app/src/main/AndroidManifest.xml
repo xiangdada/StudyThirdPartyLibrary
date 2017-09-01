@@ -33,6 +33,20 @@
         <activity android:name=".library.eventbus.SimpleExampleActivity"/>
         <activity android:name=".library.eventbus.SpecificExampleActivity"/>
         <activity android:name=".library.mpandroidchart.MPAndroidChartActivity"/>
+        <activity android:name=".library.picturezoom.PictureZoomActivity"/>
+        <activity android:name=".library.picturezoom.photoview.PhotoViewActivity"/>
+        <activity android:name=".library.picturezoom.original.OriginalPictrueZoomActivity"/>
+        <activity android:name=".library.picturezoom.photoview.PicturesActivity"/>
+        <activity android:name=".library.sideslipfunction.SideslipFunctionActivity"/>
+        <activity android:name=".library.sideslipfunction.androidswipelayout.AndroidSwipeLayoutActivity"/>
+        <activity android:name=".library.sideslipfunction.original.OriginalSideslipFunctionActivity"/>
+        <activity android:name=".library.sideslipfunction.androidswipelayout.ListViewExampleActivity"/>
+        <activity android:name=".library.androidviewanimations.AndroidViewAnimationsActivity"/>
+        <activity android:name=".library.androidviewanimations.OtherExampleAnimationsActivity"/>
+        <activity android:name=".library.androidslidinguppanel.AndroidSlidingUpPanelActivity"/>
+        <activity android:name=".library.ijkplayer.IjkplayerActivity"/>
+        <activity android:name=".library.ijkplayer.SinglePlayerActivity"/>
+
     </application>
 
 </manifest>

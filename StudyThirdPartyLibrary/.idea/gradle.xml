@@ -8,7 +8,11 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/AndroidSlidingUpPanel" />
+            <option value="$PROJECT_DIR$/AndroidSwipeLayout" />
+            <option value="$PROJECT_DIR$/AndroidViewAnimations" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/photoview" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

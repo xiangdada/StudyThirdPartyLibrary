@@ -2,4 +2,9 @@
 <resources>
     <string name="eventbus">	EventBus 是 Android 事件管理总线, 使用它可以替带 Android BroadCast, BroadCastReceiver, Handler 在 Activity, Fragment, Service, 线程之间传递消息, 大大简化了事件传递逻辑</string>
     <string name="mpandroidchart">MPAndroidChart 是一款强大的 Android 图表库, 支持各种各样图表显示, 能想到的图表样式这里几乎都有, 图表还支持选择, 拖放和缩放动画效果</string>
+    <string name="photoview">PhotoView 是 ImageView 的子类, 支持所有 ImageView 的源生行为, 例如: 支持 Pinch 手势自由缩放, 支持双击放大/还原, 支持平滑滚动等等, 并且非常方便的与 ImageLoader/Picasso 之类的网络图片读取库集成使用, 还方便的与 ViewPager 等同样支持滑动手势的控件集成</string>
+    <string name="androidswipelayout">AndroidSwipeLayout 是一个支持ListView, GridView, ViewGroup等等左右上下滑动出操作菜单, 类似 qq 消息列表向左滑动显示出多某条信息的操作菜单,在使用中发现还存在一些bug,比如当按照示例给ListView添加侧滑功能的时候,在6.0以上版本中会出现内容区域视图覆盖一小块功能区域视图,这个作者提供的demo中也有同样问题，当有一条功能区域显示时，此时滑动列表又是改功能区域会自动隐藏有时又不会自动隐藏</string>
+    <string name="androidviewanimations">这个库实现很多很酷炫的动画, 动画效果是借鉴Animate.css来实现的非常酷,而且使用起来也很简单</string>
+    <string name="androidslidinguppanel">AndroidSlidingUpPanel是一个上拉面板,就是向上滑动的时候往上飞出一个显示面板控件,该库效果在Google Music,Google Maps and Rdio等App应用到</string>
+    <string name="ijkplayer">ijkplayer是bilibili开源的一个视屏播放库，是一个基于 ffplay 的轻量级 Android/iOS 视频播放器。实现了跨平台功能，API易于集成；编译配置可裁剪，方便控制安装包大小；支持硬件加速解码，更加省电；提供Android平台下应用弹幕集成的解决方案，已经有多款知名app使用了该库进行视频播放，列如国内知名的app美拍和斗鱼，另bilibili还开源了一个android平台的弹幕解析绘制引擎项目DanmakuFlameMaster</string>
 </resources>

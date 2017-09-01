@@ -10,10 +10,15 @@ import android.widget.ListView;
 
 import com.example.admin.studythirdpartylibrary.adapter.CommonAdapter;
 import com.example.admin.studythirdpartylibrary.entity.CommonData;
+import com.example.admin.studythirdpartylibrary.library.androidslidinguppanel.AndroidSlidingUpPanelActivity;
+import com.example.admin.studythirdpartylibrary.library.androidviewanimations.AndroidViewAnimationsActivity;
 import com.example.admin.studythirdpartylibrary.library.eventbus.EventBusActivity;
+import com.example.admin.studythirdpartylibrary.library.ijkplayer.IjkplayerActivity;
 import com.example.admin.studythirdpartylibrary.library.mpandroidchart.MPAndroidChartActivity;
 import com.example.admin.studythirdpartylibrary.library.network.NetWorkActivity;
+import com.example.admin.studythirdpartylibrary.library.picturezoom.PictureZoomActivity;
 import com.example.admin.studythirdpartylibrary.library.rejava.RxJavaActivity;
+import com.example.admin.studythirdpartylibrary.library.sideslipfunction.SideslipFunctionActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +56,11 @@ public class MainActivity extends AppCompatActivity {
         datas.add(commonData("网络编程", NetWorkActivity.class));
         datas.add(commonData("EventBus",EventBusActivity.class));
         datas.add(commonData("MPAndroidChart",MPAndroidChartActivity.class));
+        datas.add(commonData("图片缩放",PictureZoomActivity.class));
+        datas.add(commonData("列表侧滑", SideslipFunctionActivity.class));
+        datas.add(commonData("视图动画",AndroidViewAnimationsActivity.class));
+        datas.add(commonData("滑行面板",AndroidSlidingUpPanelActivity.class));
+        datas.add(commonData("ijkplayer",IjkplayerActivity.class));
 
     }
 

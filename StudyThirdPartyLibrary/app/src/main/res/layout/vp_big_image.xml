@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal|center_vertical">
+    <com.github.chrisbanes.photoview.PhotoView
+        android:id="@+id/pv_bigimage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@mipmap/ic_default" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="#B3000000">
+        <ImageView
+            android:id="@+id/iv_backicon"
+            android:layout_width="44dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/btn_back_selector"
+            android:clickable="true"
+            android:visibility="gone"/>
+        <TextView
+            android:id="@+id/tv_position"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:gravity="center_vertical"
+            android:text=""
+            android:textSize="16sp"
+            android:textColor="#ffffff"/>
+        <ImageView
+            android:id="@+id/item_delete"
+            android:layout_width="44dp"
+            android:layout_height="match_parent"
+            android:src="@mipmap/delete"
+            android:layout_alignParentRight="true"
+            android:clickable="true"
+            android:visibility="gone"/>
+    </RelativeLayout>
+
+</RelativeLayout>

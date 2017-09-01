@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.daimajia.swipe.SwipeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipelayout"
+    android:layout_width="match_parent"
+    android:layout_height="85dp"
+    app:leftEdgeSwipeOffset="0dp"
+    app:rightEdgeSwipeOffset="0dp">
+
+    <LinearLayout
+        android:id="@+id/right"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_margin="0dp">
+
+        <TextView
+            android:id="@+id/delete"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:background="@color/red"
+            android:gravity="center"
+            android:text="删除"/>
+
+        <TextView
+            android:id="@+id/maketop"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:background="@color/cyan"
+            android:gravity="center"
+            android:text="置顶"/>
+
+        <TextView
+            android:id="@+id/collection"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:background="@color/orange"
+            android:gravity="center"
+            android:text="收藏"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:background="@color/white">
+
+        <!--
+        此处一定要加一个视图，然后在fillValues(int position, View convertView)方法里面进行一些操作，
+         一定要使得视图的尺寸有所变化，比如给TextView设置一些显示内容(setText("")也是可以使得视图的尺寸发生变化)，
+         比如给ImageView设置一个宽高尺寸，否则的话会出现当功能区域显示时滑动LsitView整个视图复用而产生的一些bug，
+         至于为什么会出现这个bug还没研究透彻，控件作者在给出的列子中使用时也是用了这么一个视图然后给其设置文字内容，
+         -->
+        <TextView
+            android:id="@+id/position"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"/>
+
+        <TextView
+            android:id="@+id/textdata"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:tag="Hover"
+            android:text="Do not, for one repulse, forgo the purpose that you resolved to effort. "
+            android:textColor="#000000"
+            android:padding="10dp"/>
+    </LinearLayout>
+
+</com.daimajia.swipe.SwipeLayout>
